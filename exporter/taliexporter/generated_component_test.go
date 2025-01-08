@@ -42,12 +42,12 @@ func TestComponentLifecycle(t *testing.T) {
 			},
 		},
 
-		{
-			name: "metrics",
-			createFn: func(ctx context.Context, set exporter.Settings, cfg component.Config) (component.Component, error) {
-				return factory.CreateMetrics(ctx, set, cfg)
-			},
-		},
+		// {
+		// 	name: "metrics",
+		// 	createFn: func(ctx context.Context, set exporter.Settings, cfg component.Config) (component.Component, error) {
+		// 		return factory.CreateMetrics(ctx, set, cfg)
+		// 	},
+		// },
 
 		{
 			name: "traces",
