@@ -10,6 +10,11 @@ func Test_Adding_values_less_than_4_chars_contains(t *testing.T) {
 	testFilter(t, []string{"foo"}, []string{"foo"}, []string{"bar", "asfs"})
 }
 
+func Test_Adding_values_2_chars_contains(t *testing.T) {
+	t.Skip("Skipping as we don't support less than four char substring search")
+	testFilter(t, []string{"foo fo"}, []string{"fo"}, []string{"bar", "asfs"})
+}
+
 func Test_Adding_values_with_4_chars_contains(t *testing.T) {
 	testFilter(t, []string{"foos"}, []string{"foos"}, []string{"baras", "asfs", "foo", "oos"})
 }

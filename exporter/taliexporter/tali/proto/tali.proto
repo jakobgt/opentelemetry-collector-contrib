@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package tali;
+
+// Tali segment
+message Segment {
+  // Configuration message to specify compression methods and bloom filter type
+  enum CompressionMethod {
+    COMPRESSION_METHOD_UNSPECIFIED = 0; // Default value, unspecified
+    ZSTD = 1;                           // Gzip compression
+  }
+
+  // BloomfilterType denotes which bloomfilter is used.
+  enum BloomfilterType {
+      BLOOMFILTER_TYPE_UNSPECIFIED = 0;
+      BINARY_FUSE = 1;
+  }
+
+  message Config {
+    CompressionMethod compression_method = 1;
+    BloomfilterType ngram_index = 2;
+    // TODO: Add the TRACE ID index
+  }
+
+  Config config = 1;              // Configuration field for compression and bloom filter type
+  bytes bloom_filter = 2;         // Byte array to store the bloom filter
+  bytes compressed_data = 3;      // Byte array to store compressed data
+}

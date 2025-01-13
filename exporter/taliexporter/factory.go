@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/tali"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
@@ -28,7 +29,9 @@ func createDefaultConfig() component.Config {
 }
 
 func createTracesExporter(_ context.Context, params exporter.Settings, cfg component.Config) (exporter.Traces, error) {
-	te := traceExporter{}
+	// TODO: Create the tali client.
+	client := tali.NewClient()
+	te := newExporter(client)
 	return exporterhelper.NewTraces(
 		context.TODO(),
 		params,
