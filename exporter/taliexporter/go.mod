@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/FastFilter/xorfilter v0.2.1
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchpersignal v0.116.0
+	github.com/klauspost/compress v1.17.11
 	github.com/stretchr/testify v1.10.0
 	github.com/twmb/murmur3 v1.1.8
 	go.opentelemetry.io/collector/component v0.116.0
@@ -14,6 +14,7 @@ require (
 	go.opentelemetry.io/collector/exporter/exportertest v0.116.0
 	go.opentelemetry.io/collector/pdata v1.22.0
 	go.uber.org/goleak v1.3.0
+	google.golang.org/protobuf v1.36.2
 )
 
 require (
@@ -23,11 +24,9 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/knadh/koanf/providers/confmap v0.1.0 // indirect
 	github.com/knadh/koanf/v2 v2.1.2 // indirect
@@ -63,7 +62,5 @@ require (
 	golang.org/x/text v0.18.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/grpc v1.68.1 // indirect
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1 // indirect
-	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
