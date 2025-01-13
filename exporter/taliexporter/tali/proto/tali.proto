@@ -4,7 +4,7 @@ package tali;
 
 option go_package = "tali/talipb";
 
-// Tali segment
+// Tali segment is the envelope of the Tali segments stored in durable storage.
 message Segment {
   // Configuration message to specify compression methods and bloom filter type
   enum CompressionMethod {
@@ -25,6 +25,10 @@ message Segment {
   }
 
   Config config = 1;              // Configuration field for compression and bloom filter type
-  bytes ngram_index = 2;         // Byte array to store the bloom filter
-  bytes compressed_data = 3;      // Byte array to store compressed data
+  // ngram_index contains the a marshalled and compressed form of the ngram-bloomfilter index of the 
+  // data in this message.
+  bytes ngram_index = 2;         
+  // compressed_data contains the payload/records in a marshalled and compressed form. The specific
+  // format is given in the config field.
+  bytes compressed_data = 3;      
 }
