@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tali;
 
+option go_package = "tali/talipb";
+
 // Tali segment
 message Segment {
   // Configuration message to specify compression methods and bloom filter type
@@ -23,6 +25,6 @@ message Segment {
   }
 
   Config config = 1;              // Configuration field for compression and bloom filter type
-  bytes bloom_filter = 2;         // Byte array to store the bloom filter
+  bytes ngram_index = 2;         // Byte array to store the bloom filter
   bytes compressed_data = 3;      // Byte array to store compressed data
 }

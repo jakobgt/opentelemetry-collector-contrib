@@ -14,6 +14,7 @@ all: $(GENERATED_FILES)
 
 # Rule to generate Go files from .proto files
 $(OUT_DIR)/%.pb.go: $(PROTO_DIR)/%.proto
+	mkdir -p $(OUT_DIR)
 	$(PROTOC) --proto_path=$(PROTO_DIR) \
 	          --go_out=$(OUT_DIR) \
 	          --go_opt=paths=source_relative $<
