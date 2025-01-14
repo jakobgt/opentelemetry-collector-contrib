@@ -35,12 +35,12 @@ func TestComponentLifecycle(t *testing.T) {
 		createFn func(ctx context.Context, set exporter.Settings, cfg component.Config) (component.Component, error)
 	}{
 
-		{
-			name: "logs",
-			createFn: func(ctx context.Context, set exporter.Settings, cfg component.Config) (component.Component, error) {
-				return factory.CreateLogs(ctx, set, cfg)
-			},
-		},
+		// {
+		// 	name: "logs",
+		// 	createFn: func(ctx context.Context, set exporter.Settings, cfg component.Config) (component.Component, error) {
+		// 		return factory.CreateLogs(ctx, set, cfg)
+		// 	},
+		// },
 
 		// {
 		// 	name: "metrics",

@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/klauspost/compress/zstd"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	talipb "github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/tali/internal/gen_proto"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/tali/ngram"
 )
@@ -25,13 +23,17 @@ type Client interface {
 	Upload(ctx context.Context, seg Segment) error
 
 	GenerateSegment(ctx context.Context, builder ngram.Builder, bytz []byte) (Segment, error)
+
+	// Shutdown shuts down the Tali client.
+	Shutdown(ctx context.Context) error
 }
 
 var _ Client = (*client)(nil)
 
 type client struct {
-	s3Manager  *manager.Uploader
-	ztdEncoder *zstd.Encoder
+	s3client    minio.Client
+	s3Transport *http.Transport
+	ztdEncoder  *zstd.Encoder
 }
 
 // NewClient returns a Tali client
@@ -41,22 +43,38 @@ func NewClient() (Client, error) {
 	if err != nil {
 		panic("could not create tali client. Error is " + err.Error())
 	}
+	endpoint := "localhost:9000"
+	// Note local Minio secrets.
+	accessKeyID := "ZfhAK4x5LvEgsF1IIVE9"
+	secretAccessKey := "UQut09ZtU0NyE5wY6Mychbg0e2oJTin7qNJpDy9P"
+	useSSL := false
+	// We need to be able to close any connections at the transport layer, so manually creating the transport here
 
-	// TODO: Should we allow configuration of the part size? 5MiB is small if running in the same
-	// cloud zone as S3.
-	cfg, err := config.LoadDefaultConfig(context.TODO()) // Replace with your AWS region
+	tr, err := minio.DefaultTransport(useSSL)
 	if err != nil {
-		return nil, fmt.Errorf("unable to load AWS configuration: %w", err)
+		return nil, err
 	}
-	s3Client := s3.NewFromConfig(cfg)
-	uploader := manager.NewUploader(s3Client, func(u *manager.Uploader) {
-		u.PartSize = 5 * 1024 * 1024
+	// Initialize minio client object.
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:     credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure:    useSSL,
+		Transport: tr,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &client{
-		ztdEncoder: compressor,
-		s3Manager:  uploader,
+		s3client:    *minioClient,
+		s3Transport: tr,
+		ztdEncoder:  compressor,
 	}, nil
+}
+
+// Shutdown closes all idle outgoing connections from the Tali client
+func (c *client) Shutdown(ctx context.Context) error {
+	c.s3Transport.CloseIdleConnections()
+	return nil
 }
 
 // Upload implements Client.
@@ -71,15 +89,10 @@ func (c *client) Upload(ctx context.Context, seg Segment) error {
 
 	t := time.Now()
 	s3key := t.Format("20060102150405")
-
-	input := &s3.PutObjectInput{
-		Bucket:            aws.String(S3_BUCKET),
-		Key:               aws.String(fmt.Sprintf("/segment/%s.seg", s3key)),
-		Body:              bytes.NewReader(payload),
-		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
-	}
-	// TODO: If the segment is larger than 5Mib, then it becomes a Multipart.
-	_, err = c.s3Manager.Upload(ctx, input)
+	s3key = fmt.Sprintf("%s.log", s3key)
+	contentType := "application/octet-stream"
+	_, err = c.s3client.PutObject(ctx, S3_BUCKET, s3key, bytes.NewReader(payload), int64(len(payload)),
+		minio.PutObjectOptions{ContentType: contentType})
 	return err
 }
 
