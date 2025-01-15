@@ -7,3 +7,8 @@ status:
   distributions: [contrib]
   codeowners:
     active: [jakobgt]
+
+tests:
+  config:
+    s3_access_key: "access-key"
+    s3_secret_key: "secret-key"

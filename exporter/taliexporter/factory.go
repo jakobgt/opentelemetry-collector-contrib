@@ -21,13 +21,6 @@ func NewFactory() exporter.Factory {
 	)
 }
 
-type Config struct {
-}
-
-func createDefaultConfig() component.Config {
-	return Config{}
-}
-
 func createTracesExporter(_ context.Context, params exporter.Settings, cfg component.Config) (exporter.Traces, error) {
 	// TODO: Should the initialization of the tali client happen in start?
 	client, err := tali.NewClient()

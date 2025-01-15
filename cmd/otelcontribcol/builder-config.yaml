@@ -97,6 +97,7 @@ exporters:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sumologicexporter v0.117.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/syslogexporter v0.117.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/tencentcloudlogserviceexporter v0.117.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter v0.117.0  
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/zipkinexporter v0.117.0
 
 processors:
@@ -509,3 +510,4 @@ replaces:
   - github.com/open-telemetry/opentelemetry-collector-contrib/pkg/status => ../../pkg/status
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awss3receiver => ../../receiver/awss3receiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/exporter/dorisexporter => ../../exporter/dorisexporter
+  - github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter => ../../exporter/taliexporter  
