@@ -13,7 +13,7 @@ processors:
 exporters:
   tali:
     s3_access_key: ${env:TALI_S3_ACCESS_KEY}
-    s3_secret: ${env:TALI_S3_SECRET_KEY}
+    s3_secret_key: ${env:TALI_S3_SECRET_KEY}
 
 service:
   pipelines:

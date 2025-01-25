@@ -1,10 +1,12 @@
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
 package taliexporter
 
 import (
 	"context"
 
+	"github.com/jakobgt/go-tali"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/internal/metadata"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/tali"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
@@ -23,7 +25,7 @@ func NewFactory() exporter.Factory {
 
 func createTracesExporter(_ context.Context, params exporter.Settings, cfg component.Config) (exporter.Traces, error) {
 	// TODO: Should the initialization of the tali client happen in start?
-	client, err := tali.NewClient()
+	client, err := tali.NewOtelClient()
 	if err != nil {
 		return nil, err
 	}
