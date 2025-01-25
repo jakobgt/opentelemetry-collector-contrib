@@ -6,11 +6,11 @@ import (
 	"context"
 
 	"github.com/jakobgt/go-tali"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/internal/metadata"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
 	"go.opentelemetry.io/collector/exporter/exporterhelper"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/taliexporter/internal/metadata"
 )
 
 //go:generate mdatagen metadata.yaml
@@ -40,6 +40,6 @@ func createTracesExporter(_ context.Context, params exporter.Settings, cfg compo
 		// exporterhelper.WithStart(te.Start),
 		// exporterhelper.WithShutdown(te.Stop),
 		// TODO: Once we can, we should use the batcher option
-		//exporterhelper.WithBatcher()
+		// exporterhelper.WithBatcher()
 	)
 }

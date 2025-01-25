@@ -6,7 +6,6 @@ import (
 	"context"
 
 	"github.com/jakobgt/go-tali"
-
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
@@ -24,7 +23,7 @@ func newExporter(client tali.Client[ptrace.Traces]) *traceExporter {
 }
 
 func (t *traceExporter) ConsumeTracesFunc(ctx context.Context, td ptrace.Traces) error {
-	//batchpersignal.SplitTraces(td)
+	// batchpersignal.SplitTraces(td)
 	// TODO: Batch traces per traceid
 	return t.tclient.Upload(ctx, td)
 }
