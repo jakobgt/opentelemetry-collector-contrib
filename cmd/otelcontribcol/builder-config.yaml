@@ -509,4 +509,3 @@ replaces:
   - github.com/open-telemetry/opentelemetry-collector-contrib/pkg/status => ../../pkg/status
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awss3receiver => ../../receiver/awss3receiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/exporter/dorisexporter => ../../exporter/dorisexporter
-  
