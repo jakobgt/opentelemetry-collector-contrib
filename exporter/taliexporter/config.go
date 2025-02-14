@@ -7,8 +7,14 @@ import "go.opentelemetry.io/collector/component"
 
 // Config is the struct for configuring the tali exporter
 type Config struct {
+	// These entries are only for headless mode.
 	S3AccessKey string `mapstructure:"s3_access_key"`
 	S3SecretKey string `mapstructure:"s3_secret_key"`
+	S3Endpoint  string `mapstructure:"s3_endpoint"`
+	S3UseSSL    bool   `mapstructure:"s3_use_ssl"`
+
+	// Set this for testing (data is /dev/null'ed)
+	S3DevNullMode bool `mapstructure:"s3_dev_null_mode"`
 }
 
 func createDefaultConfig() component.Config {
