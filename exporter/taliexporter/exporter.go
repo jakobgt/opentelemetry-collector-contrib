@@ -4,8 +4,10 @@ package taliexporter
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/jakobgt/go-tali"
 	"go.opentelemetry.io/collector/pdata/ptrace"
@@ -45,22 +47,33 @@ func (t *traceExporter) ConsumeTracesFunc(ctx context.Context, td ptrace.Traces)
 	// TODO: Batch traces per traceid - Use the sort function on resourceSpans?
 
 	// If we're stopped we just upload this one directly in this goroutine
-	if t.stopped.Load() {
-		return t.traceClient.Upload(ctx, td)
+	// if t.stopped.Load() {
+	// Batching is handled by the batch processor.
+	err := t.traceClient.Upload(ctx, td)
+
+	d, ok := ctx.Deadline()
+	if ok {
+		diff := time.Until(d)
+		fmt.Printf("After deadline: %s\n", diff)
+	} else {
+		fmt.Printf("No deadline\n")
 	}
 
-	// otherwise we stop in a different one
-	t.goroutines.Add(1)
-	go func() {
-		defer t.goroutines.Done()
-		spanCount := td.SpanCount()
-		t.log.Info("Uploading new Tali segment", zap.Int("span_count", spanCount))
-		ctx := context.Background()
-		if err := t.traceClient.Upload(ctx, td); err != nil {
-			t.log.Warn("error encountered when uploading segment", zap.Int("span_count", spanCount), zap.Error(err))
-		}
-	}()
-	return nil
+	return err
+	//	}
+
+	// // otherwise we stop in a different one
+	// t.goroutines.Add(1)
+	// go func() {
+	// 	defer t.goroutines.Done()
+	// 	spanCount := td.SpanCount()
+	// 	t.log.Info("Uploading new Tali segment", zap.Int("span_count", spanCount))
+	// 	ctx := context.Background()
+	// 	if err := t.traceClient.Upload(ctx, td); err != nil {
+	// 		t.log.Warn("error encountered when uploading segment", zap.Int("span_count", spanCount), zap.Error(err))
+	// 	}
+	// }()
+	// return nil
 }
 
 // func (t *traceExporter) start(context.Context, component.Host) error {

@@ -112,6 +112,8 @@ func TestComponentLifecycle(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+
+	require.Fail(t, "asdf")
 }
 
 func generateLifecycleTestLogs() plog.Logs {

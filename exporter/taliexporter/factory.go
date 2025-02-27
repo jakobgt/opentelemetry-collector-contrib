@@ -60,6 +60,7 @@ func createTracesExporter(_ context.Context, params exporter.Settings, comCfg co
 		te.ConsumeTracesFunc,
 		//		exporterhelper.WithStart(te.start),
 		exporterhelper.WithShutdown(te.stop),
+		exporterhelper.WithQueue(cfg.QueueSettings),
 		// TODO: Consider to use start and stop functions?
 		// exporterhelper.WithStart(te.Start),
 		// exporterhelper.WithShutdown(te.Stop),

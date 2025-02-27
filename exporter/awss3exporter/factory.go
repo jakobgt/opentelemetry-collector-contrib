@@ -97,7 +97,6 @@ func createTracesExporter(ctx context.Context,
 	if config.(*Config).MarshalerName == SumoIC {
 		return nil, fmt.Errorf("traces are not supported by sumo_ic output format")
 	}
-
 	return exporterhelper.NewTraces(ctx,
 		params,
 		config,

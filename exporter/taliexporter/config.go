@@ -3,7 +3,10 @@
 
 package taliexporter
 
-import "go.opentelemetry.io/collector/component"
+import (
+	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/exporter/exporterhelper"
+)
 
 // Config is the struct for configuring the tali exporter
 type Config struct {
@@ -15,8 +18,12 @@ type Config struct {
 
 	// Set this for testing (data is /dev/null'ed)
 	S3DevNullMode bool `mapstructure:"s3_dev_null_mode"`
+
+	QueueSettings exporterhelper.QueueConfig `mapstructure:"sending_queue"`
 }
 
 func createDefaultConfig() component.Config {
-	return Config{}
+	return Config{
+		QueueSettings: exporterhelper.NewDefaultQueueConfig(),
+	}
 }
