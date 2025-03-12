@@ -32,27 +32,37 @@ func createTracesExporter(_ context.Context, params exporter.Settings, comCfg co
 
 	logger := params.TelemetrySettings.Logger
 
-	var arg tali.OtelClientArgs
+	arg := []tali.OtelClientArgs{}
 
 	if cfg.S3DevNullMode {
 		logger.Warn("TaliExporter is starting in /dev/null mode which means all data is sent to /dev/null. Use only for testing")
-		arg = tali.WithObjectStorageClient(tali.NewDevNullClient())
+		arg = append(arg, tali.WithObjectStorageClient(tali.NewDevNullClient()))
 	} else {
-		arg = tali.WithHeadlessMode(
+		arg = append(arg, tali.WithHeadlessMode(
 			tali.HeadlessModeConfig{
 				S3AccessKey: cfg.S3AccessKey,
 				S3SecretKey: cfg.S3SecretKey,
 				S3Endpoint:  cfg.S3Endpoint,
 				S3UseSSL:    cfg.S3UseSSL,
-			})
+			}))
+	}
+
+	if cfg.SIIMarshal {
+		arg = append(arg, tali.WithSSIMarshaller())
 	}
 
 	// TODO: Should the initialization of the tali client happen in start?
-	client, err := tali.NewOtelTraceClient(arg)
+	client, err := tali.NewOtelTraceClient(arg...)
 	if err != nil {
 		return nil, err
 	}
 	te := newExporter(client, logger)
+
+	timeout := exporterhelper.NewDefaultTimeoutConfig()
+	if cfg.Timeout > 0 {
+		timeout.Timeout = cfg.Timeout
+	}
+
 	return exporterhelper.NewTraces(
 		context.TODO(),
 		params,
@@ -61,6 +71,7 @@ func createTracesExporter(_ context.Context, params exporter.Settings, comCfg co
 		//		exporterhelper.WithStart(te.start),
 		exporterhelper.WithShutdown(te.stop),
 		exporterhelper.WithQueue(cfg.QueueSettings),
+		exporterhelper.WithTimeout(timeout),
 		// TODO: Consider to use start and stop functions?
 		// exporterhelper.WithStart(te.Start),
 		// exporterhelper.WithShutdown(te.Stop),

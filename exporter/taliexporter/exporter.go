@@ -59,6 +59,10 @@ func (t *traceExporter) ConsumeTracesFunc(ctx context.Context, td ptrace.Traces)
 		fmt.Printf("No deadline\n")
 	}
 
+	if err != nil {
+		t.log.Warn("error encountered when uploading segment", zap.Int("span_count", td.SpanCount()), zap.Error(err))
+	}
+
 	return err
 	//	}
 
