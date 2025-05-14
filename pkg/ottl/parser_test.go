@@ -1394,7 +1394,7 @@ func Test_parse(t *testing.T) {
 		t.Run(tt.statement, func(t *testing.T) {
 			parsed, err := parseStatement(tt.statement)
 			assert.NoError(t, err)
-			assert.EqualValues(t, tt.expected, parsed)
+			assert.Equal(t, tt.expected, parsed)
 		})
 	}
 }
@@ -1555,7 +1555,7 @@ func Test_parseCondition_full(t *testing.T) {
 		t.Run(tt.condition, func(t *testing.T) {
 			parsed, err := parseCondition(tt.condition)
 			assert.NoError(t, err)
-			assert.EqualValues(t, tt.expected, parsed)
+			assert.Equal(t, tt.expected, parsed)
 		})
 	}
 }
@@ -1581,7 +1581,7 @@ func testParsePath[K any](p Path[K]) (GetSetter[any], error) {
 			Getter: func(_ context.Context, tCtx any) (any, error) {
 				m, ok := tCtx.(map[string]time.Duration)
 				if !ok {
-					return nil, fmt.Errorf("unable to convert transform context to map of strings to times")
+					return nil, errors.New("unable to convert transform context to map of strings to times")
 				}
 				return m[p.Name()], nil
 			},
@@ -1596,7 +1596,7 @@ func testParsePath[K any](p Path[K]) (GetSetter[any], error) {
 			Getter: func(_ context.Context, tCtx any) (any, error) {
 				m, ok := tCtx.(map[string]time.Time)
 				if !ok {
-					return nil, fmt.Errorf("unable to convert transform context to map of strings to times")
+					return nil, errors.New("unable to convert transform context to map of strings to times")
 				}
 				return m[p.Name()], nil
 			},
@@ -2126,9 +2126,9 @@ func testParseEnum(val *EnumSymbol) (*Enum, error) {
 		if enum, ok := testSymbolTable[*val]; ok {
 			return &enum, nil
 		}
-		return nil, fmt.Errorf("enum symbol not found")
+		return nil, errors.New("enum symbol not found")
 	}
-	return nil, fmt.Errorf("enum symbol not provided")
+	return nil, errors.New("enum symbol not provided")
 }
 
 func Test_parseValueExpression_full(t *testing.T) {
@@ -2599,7 +2599,7 @@ func Test_Statements_Execute_Error(t *testing.T) {
 		{
 			name: "IgnoreError error from condition",
 			condition: func(context.Context, any) (bool, error) {
-				return true, fmt.Errorf("test")
+				return true, errors.New("test")
 			},
 			function: func(_ context.Context, _ any) (any, error) {
 				return 1, nil
@@ -2609,7 +2609,7 @@ func Test_Statements_Execute_Error(t *testing.T) {
 		{
 			name: "PropagateError error from condition",
 			condition: func(context.Context, any) (bool, error) {
-				return true, fmt.Errorf("test")
+				return true, errors.New("test")
 			},
 			function: func(_ context.Context, _ any) (any, error) {
 				return 1, nil
@@ -2622,7 +2622,7 @@ func Test_Statements_Execute_Error(t *testing.T) {
 				return true, nil
 			},
 			function: func(_ context.Context, _ any) (any, error) {
-				return 1, fmt.Errorf("test")
+				return 1, errors.New("test")
 			},
 			errorMode: IgnoreError,
 		},
@@ -2632,14 +2632,14 @@ func Test_Statements_Execute_Error(t *testing.T) {
 				return true, nil
 			},
 			function: func(_ context.Context, _ any) (any, error) {
-				return 1, fmt.Errorf("test")
+				return 1, errors.New("test")
 			},
 			errorMode: PropagateError,
 		},
 		{
 			name: "SilentError error from condition",
 			condition: func(context.Context, any) (bool, error) {
-				return true, fmt.Errorf("test")
+				return true, errors.New("test")
 			},
 			function: func(_ context.Context, _ any) (any, error) {
 				return 1, nil
@@ -2652,7 +2652,7 @@ func Test_Statements_Execute_Error(t *testing.T) {
 				return true, nil
 			},
 			function: func(_ context.Context, _ any) (any, error) {
-				return 1, fmt.Errorf("test")
+				return 1, errors.New("test")
 			},
 			errorMode: SilentError,
 		},
@@ -2724,7 +2724,7 @@ func Test_ConditionSequence_Eval(t *testing.T) {
 			name: "Single erroring condition is treated as false when using Ignore with OR",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 			},
 			errorMode:      IgnoreError,
@@ -2735,7 +2735,7 @@ func Test_ConditionSequence_Eval(t *testing.T) {
 			name: "erroring condition is ignored when using Ignore with OR",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 				alwaysTrue[any],
 			},
@@ -2777,7 +2777,7 @@ func Test_ConditionSequence_Eval(t *testing.T) {
 			name: "Single erroring condition is treated as false when using Ignore with AND",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 			},
 			errorMode:      IgnoreError,
@@ -2788,7 +2788,7 @@ func Test_ConditionSequence_Eval(t *testing.T) {
 			name: "erroring condition is ignored when using Ignore with AND",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 				alwaysTrue[any],
 			},
@@ -2831,7 +2831,7 @@ func Test_ConditionSequence_Eval_Error(t *testing.T) {
 			name: "Propagate Error from condition",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 			},
 			errorMode: PropagateError,
@@ -2840,7 +2840,7 @@ func Test_ConditionSequence_Eval_Error(t *testing.T) {
 			name: "Ignore Error from function with IgnoreError",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 			},
 			errorMode: IgnoreError,
@@ -2849,7 +2849,7 @@ func Test_ConditionSequence_Eval_Error(t *testing.T) {
 			name: "Ignore Error from function with SilentError",
 			conditions: []boolExpressionEvaluator[any]{
 				func(context.Context, any) (bool, error) {
-					return true, fmt.Errorf("test")
+					return true, errors.New("test")
 				},
 			},
 			errorMode: SilentError,
@@ -3012,6 +3012,143 @@ func Test_prependContextToStatementPaths_Success(t *testing.T) {
 			require.NotNil(t, ps)
 
 			result, err := ps.prependContextToStatementPaths(tt.context, tt.statement)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func Test_prependContextToConditionPaths_InvalidCondition(t *testing.T) {
+	ps, err := NewParser(
+		CreateFactoryMap[any](),
+		testParsePath[any],
+		componenttest.NewNopTelemetrySettings(),
+		WithEnumParser[any](testParseEnum),
+		WithPathContextNames[any]([]string{"foo", "bar"}),
+	)
+	require.NoError(t, err)
+	_, err = ps.prependContextToConditionPaths("foo", "this is invalid")
+	require.ErrorContains(t, err, `condition has invalid syntax`)
+}
+
+func Test_prependContextToConditionPaths_InvalidContext(t *testing.T) {
+	ps, err := NewParser(
+		CreateFactoryMap[any](),
+		testParsePath[any],
+		componenttest.NewNopTelemetrySettings(),
+		WithEnumParser[any](testParseEnum),
+		WithPathContextNames[any]([]string{"foo", "bar"}),
+	)
+	require.NoError(t, err)
+	_, err = ps.prependContextToConditionPaths("foobar", "set(foo, 1)")
+	require.ErrorContains(t, err, `unknown context "foobar" for parser`)
+}
+
+func Test_prependContextToConditionPaths_Success(t *testing.T) {
+	type mockSetArguments[K any] struct {
+		Target Setter[K]
+		Value  Getter[K]
+	}
+
+	mockSetFactory := NewFactory("set", &mockSetArguments[any]{}, func(_ FunctionContext, _ Arguments) (ExprFunc[any], error) {
+		return func(_ context.Context, _ any) (any, error) {
+			return nil, nil
+		}, nil
+	})
+
+	tests := []struct {
+		name             string
+		condition        string
+		context          string
+		pathContextNames []string
+		expected         string
+	}{
+		{
+			name:             "no paths",
+			condition:        `"foo" == 1`,
+			context:          "bar",
+			pathContextNames: []string{"bar"},
+			expected:         `"foo" == 1`,
+		},
+		{
+			name:             "single path with context",
+			condition:        `span.value == 1`,
+			context:          "span",
+			pathContextNames: []string{"span"},
+			expected:         `span.value == 1`,
+		},
+		{
+			name:             "single path without context",
+			condition:        "value == 1",
+			context:          "span",
+			pathContextNames: []string{"span"},
+			expected:         "span.value == 1",
+		},
+		{
+			name:             "single path with context - multiple context names",
+			condition:        "span.value == 1",
+			context:          "spanevent",
+			pathContextNames: []string{"spanevent", "span"},
+			expected:         "span.value == 1",
+		},
+		{
+			name:             "multiple paths with the same context",
+			condition:        `span.attributes["foo"] == "foo" and span.id == 1`,
+			context:          "another",
+			pathContextNames: []string{"another", "span"},
+			expected:         `span.attributes["foo"] == "foo" and span.id == 1`,
+		},
+		{
+			name:             "multiple paths with different contexts",
+			condition:        `another.value == 1 and span.attributes["foo"] == "foo" and another.id == 1`,
+			context:          "another",
+			pathContextNames: []string{"another", "span"},
+			expected:         `another.value == 1 and span.attributes["foo"] == "foo" and another.id == 1`,
+		},
+		{
+			name:             "multiple paths with and without contexts",
+			condition:        `value == 1 and span.attributes["foo"] == "foo" and id == 1`,
+			context:          "spanevent",
+			pathContextNames: []string{"spanevent", "span"},
+			expected:         `spanevent.value == 1 and span.attributes["foo"] == "foo" and spanevent.id == 1`,
+		},
+		{
+			name:             "multiple paths without context",
+			condition:        `value == 1 or name == attributes["foo.name"]`,
+			context:          "span",
+			pathContextNames: []string{"span"},
+			expected:         `span.value == 1 or span.name == span.attributes["foo.name"]`,
+		},
+		{
+			name:             "function path parameter without context",
+			condition:        `attributes["test"] == "pass" and IsMatch(name, "operation[AC]")`,
+			context:          "log",
+			pathContextNames: []string{"log"},
+			expected:         `log.attributes["test"] == "pass" and IsMatch(log.name, "operation[AC]")`,
+		},
+		{
+			name:             "function path parameter with context",
+			condition:        `attributes["test"] == "pass" and IsMatch(resource.name, "operation[AC]")`,
+			context:          "log",
+			pathContextNames: []string{"log", "resource"},
+			expected:         `log.attributes["test"] == "pass" and IsMatch(resource.name, "operation[AC]")`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ps, err := NewParser(
+				CreateFactoryMap[any](mockSetFactory),
+				testParsePath[any],
+				componenttest.NewNopTelemetrySettings(),
+				WithEnumParser[any](testParseEnum),
+				WithPathContextNames[any](tt.pathContextNames),
+			)
+
+			require.NoError(t, err)
+			require.NotNil(t, ps)
+
+			result, err := ps.prependContextToConditionPaths(tt.context, tt.condition)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, result)
 		})
